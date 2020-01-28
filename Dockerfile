@@ -36,8 +36,8 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.7.12-Linux-x86
 RUN conda install -y python=3.7.5
 
 # python utility
-RUN pip install -y pipx && \
-    pipx install -y \
+RUN pip install pipx && \
+    pipx install \
       yq \
       gpustat \
       mypy
