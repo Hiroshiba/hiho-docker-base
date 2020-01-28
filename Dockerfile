@@ -37,9 +37,8 @@ RUN conda install -y python=3.7.5
 
 # python utility
 RUN pip install pipx && \
-    pipx install \
-      yq \
-      gpustat \
-      mypy
+    pipx install yq \
+    pipx install gpustat \
+    pipx install mypy
 
 CMD ["bash"]
