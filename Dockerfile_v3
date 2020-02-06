@@ -14,6 +14,7 @@ RUN apt-get update --fix-missing && \
       g++ \
       cmake \
       sudo \
+      htop \
       jq \
       vim \
       tree \
@@ -24,6 +25,14 @@ RUN apt-get update --fix-missing && \
       && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# kubernetes
+RUN apt-get update && \
+    apt-get install -y apt-transport-https gnupg && \
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
+    apt-get update && \
+    apt-get install -y kubectl
 
 # miniconda
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.7.12-Linux-x86_64.sh -O ~/miniconda.sh && \
@@ -36,18 +45,22 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.7.12-Linux-x86
 
 RUN conda install -y python=3.7.5
 
-# pypi
-RUN conda install -y numpy && \
-    conda install -y numba && \
-    pip install scipy && \
-    pip install matplotlib && \
-    pip install pandas
+# conda
+RUN conda install -y \
+      numpy \
+      numba
 
-# python utility
-RUN pip install pipx && \
-    pipx install yq && \
-    pipx install gpustat && \
-    pipx install mypy
+# pypi
+RUN pip install \
+      scipy \
+      pandas \
+      matplotlib \
+      ipython \
+      jupyter \
+      mypy \
+      pytest \
+      yq \
+      gpustat
 
 # ssh
 RUN apt-get update && apt-get install -y openssh-server openssh-client wget && \
@@ -60,11 +73,3 @@ RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh && \
 
 EXPOSE 22
 CMD ["/bin/bash", "/run.sh"]
-
-# kubernetes
-RUN apt-get update && \
-    apt-get install -y apt-transport-https gnupg && \
-    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
-    apt-get update && \
-    apt-get install -y kubectl

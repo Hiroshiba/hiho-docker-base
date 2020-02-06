@@ -1,4 +1,4 @@
-FROM hiroshiba/hiho-docker-base:v1
+FROM hiroshiba/hiho-docker-base:v3
 
 # install for audio utils, librosa, segmentation-kit
 RUN apt-get update && \
@@ -9,7 +9,7 @@ RUN apt-get update && \
 
 # pypi
 RUN pip install librosa==0.7.2
-RUN pip install git+https://github.com/Hiroshiba/acoustic_feature_extractor@25892fcccb41276e7169858d59eb17e1f9217015
+RUN pip install git+https://github.com/Hiroshiba/acoustic_feature_extractor@f183c98edddab8166e9cbed9b37bd741277899ad
 
 # github
 WORKDIR /github
