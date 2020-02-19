@@ -1,0 +1,39 @@
+FROM hiroshiba/hiho-docker-base:v5
+
+# install for audio utils, librosa, segmentation-kit
+RUN apt-get update && \
+    apt-get install -y sox ffmpeg julius && \
+    apt-get install -y swig libsndfile1-dev libasound2-dev && \
+    apt-get install -y perl pulseaudio build-essential && \
+    apt-get clean
+
+# pypi
+RUN pip install \
+  librosa==0.7.2 \
+  ffmpeg-python \
+  git+https://github.com/Hiroshiba/acoustic_feature_extractor@88c5bdc927c4e0f80ee36cb91677e22c2c191606
+
+# github
+WORKDIR /github
+
+RUN id=1ceb4dec245ef482918ca33c55c71d383dce145e && \
+    curl -kL https://github.com/julius-speech/dictation-kit/archive/$id.zip > /tmp/github.zip && \
+    unzip /tmp/github.zip -d /github/ && \
+    mv /github/dictation-kit* /github/dictation-kit && \
+    curl -kL https://github.com/julius-speech/dictation-kit/raw/$id/model/phone_m/jnas-mono-16mix-gid.binhmm > /github/dictation-kit/model/phone_m/jnas-mono-16mix-gid.binhmm && \
+    curl -kL https://github.com/julius-speech/dictation-kit/raw/$id/model/phone_m/jnas-tri-3k16-gid.binhmm > /github/dictation-kit/model/phone_m/jnas-tri-3k16-gid.binhmm && \
+    curl -kL https://github.com/julius-speech/dictation-kit/raw/$id/model/phone_m/logicalTri > /github/dictation-kit/model/phone_m/logicalTri && \
+    curl -kL https://github.com/julius-speech/dictation-kit/raw/$id/model/phone_m/logicalTri-3k16-gid.bin > /github/dictation-kit/model/phone_m/logicalTri-3k16-gid.bin && \
+    rm /tmp/github.zip
+
+RUN curl -kL https://github.com/Hiroshiba/segmentation-kit/archive/4b23e4b40acbf301731022a54aadad5a197ab2aa.zip > /tmp/github.zip && \
+    unzip /tmp/github.zip -d /github/ && \
+    mv /github/segmentation-kit* /github/segmentation-kit && \
+    rm /tmp/github.zip
+
+RUN curl -kL https://github.com/Hiroshiba/julius4seg/archive/c488a9ccf93fe6b2be1fca8eb1c034f532314f79.zip > /tmp/github.zip && \
+    unzip /tmp/github.zip -d /github/ && \
+    mv /github/julius4seg* /github/julius4seg && \
+    rm /tmp/github.zip
+
+WORKDIR /root
