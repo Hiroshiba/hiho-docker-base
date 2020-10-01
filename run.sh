@@ -1,12 +1,13 @@
 set -eu
 
 target=${1:-'*'}
+build_option=${2:-''}
 
 target_files=$(ls Dockerfile_$target | awk '{ print length, $0 }' | sort -n -s | cut -d" " -f2-)
 
 for dockerfile in $target_files; do
   tag=${dockerfile/Dockerfile_/}
-  docker build -f $dockerfile -t hiroshiba/hiho-docker-base:$tag .
+  docker build -f $dockerfile -t hiroshiba/hiho-docker-base:$tag $build_option .
   docker push hiroshiba/hiho-docker-base:$tag
 done
 

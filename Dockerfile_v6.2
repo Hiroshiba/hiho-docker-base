@@ -18,6 +18,8 @@ RUN apt-get update --fix-missing && \
       tree \
       dstat \
       parallel \
+      moreutils \
+      rsync \
       git-lfs \
       unzip \
       tmux \
@@ -63,10 +65,14 @@ RUN pip install \
       matplotlib \
       ipython \
       jupyter \
+      bash_kernel \
       mypy \
       pytest \
       yq \
       gpustat
+
+# jupyter
+RUN python -m bash_kernel.install
 
 # ssh
 RUN apt-get update && apt-get install -y openssh-server openssh-client wget && \
