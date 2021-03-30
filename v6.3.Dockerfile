@@ -2,29 +2,29 @@ FROM ubuntu:18.04
 
 RUN apt-get update --fix-missing && \
     apt-get install -y \
-      locales \
-      wget \
-      bzip2 \
-      ca-certificates \
-      curl \
-      git \
-      gcc \
-      g++ \
-      cmake \
-      sudo \
-      htop \
-      jq \
-      vim \
-      tree \
-      dstat \
-      parallel \
-      moreutils \
-      rsync \
-      git-lfs \
-      zip \
-      unzip \
-      tmux \
-      && \
+        locales \
+        wget \
+        bzip2 \
+        ca-certificates \
+        curl \
+        git \
+        gcc \
+        g++ \
+        cmake \
+        sudo \
+        htop \
+        jq \
+        vim \
+        tree \
+        dstat \
+        parallel \
+        moreutils \
+        rsync \
+        git-lfs \
+        zip \
+        unzip \
+        tmux \
+        && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -56,21 +56,21 @@ RUN conda install -y python=3.7.5
 
 # conda
 RUN conda install -y \
-      numpy \
-      numba
+        numpy \
+        numba
 
 # pypi
 RUN pip install \
-      scipy \
-      pandas \
-      matplotlib \
-      ipython \
-      jupyter \
-      bash_kernel \
-      mypy \
-      pytest \
-      yq \
-      gpustat
+        scipy \
+        pandas \
+        matplotlib \
+        ipython \
+        jupyter \
+        bash_kernel \
+        mypy \
+        pytest \
+        yq \
+        gpustat
 
 # jupyter
 RUN python -m bash_kernel.install
