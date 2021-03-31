@@ -1,4 +1,4 @@
-FROM hiroshiba/hiho-docker-base:v6.3
+FROM hiroshiba/hiho-docker-base:v7.1
 
 # install for audio utils, librosa, segmentation-kit
 RUN apt-get update && \
@@ -18,7 +18,7 @@ RUN id=4182bf024872cf4ff4388475359d74695dd5ee16 && \
     unzip /tmp/github.zip -d /github/ && \
     mv /github/julius* /github/julius && \
     cd /github/julius && \
-    ./configure --enable-words-int --enable-setup=standard && \
+    CC=nvcc CFLAGS=-O3 ./configure --enable-words-int --enable-setup=standard && \
     make -j && \
     make install && \
     rm -r /github/julius && \
@@ -26,14 +26,11 @@ RUN id=4182bf024872cf4ff4388475359d74695dd5ee16 && \
 
 # dictation-kit
 RUN id=1ceb4dec245ef482918ca33c55c71d383dce145e && \
-    curl -kL https://github.com/julius-speech/dictation-kit/archive/$id.zip > /tmp/github.zip && \
-    unzip /tmp/github.zip -d /github/ && \
-    mv /github/dictation-kit* /github/dictation-kit && \
-    curl -kL https://github.com/julius-speech/dictation-kit/raw/$id/model/phone_m/jnas-mono-16mix-gid.binhmm > /github/dictation-kit/model/phone_m/jnas-mono-16mix-gid.binhmm && \
-    curl -kL https://github.com/julius-speech/dictation-kit/raw/$id/model/phone_m/jnas-tri-3k16-gid.binhmm > /github/dictation-kit/model/phone_m/jnas-tri-3k16-gid.binhmm && \
-    curl -kL https://github.com/julius-speech/dictation-kit/raw/$id/model/phone_m/logicalTri > /github/dictation-kit/model/phone_m/logicalTri && \
-    curl -kL https://github.com/julius-speech/dictation-kit/raw/$id/model/phone_m/logicalTri-3k16-gid.bin > /github/dictation-kit/model/phone_m/logicalTri-3k16-gid.bin && \
-    rm /tmp/github.zip
+    git clone https://github.com/julius-speech/dictation-kit.git && \
+    cd dictation-kit && \
+    git reset --hard $id && \
+    git lfs pull && \
+    rm -rf .git
 
 # segmentation-kit
 RUN id=4b23e4b40acbf301731022a54aadad5a197ab2aa && \
@@ -48,6 +45,6 @@ RUN pip install \
     ffmpeg-python \
     git+https://github.com/Hiroshiba/acoustic_feature_extractor@0cb5f6460fc89c1e321823550f5374da23299cd3 \
     git+https://github.com/Hiroshiba/openjtalk-label-getter@3737eec59ca5d35a5a43f31d1f6c51c2835d9030 \
-    git+https://github.com/Hiroshiba/julius4seg@0e01f546bf4aa1329c9ee7a39df8630c066e63e3
+    git+https://github.com/Hiroshiba/julius4seg@8b36b61f6fcc761612be8d6c33b391b7586d95f0
 
 WORKDIR /root
