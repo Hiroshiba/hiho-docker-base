@@ -2,6 +2,9 @@ FROM hiroshiba/hiho-docker-base:v7.1
 
 # install for audio utils, librosa, segmentation-kit
 RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository -y ppa:jonathonf/ffmpeg-4 && \
+    apt-get update && \
     apt-get install -y sox ffmpeg && \
     apt-get install -y open-jtalk open-jtalk-mecab-naist-jdic hts-voice-nitech-jp-atr503-m001 && \
     apt-get install -y swig libsndfile1-dev libasound2-dev && \
@@ -43,7 +46,7 @@ RUN id=4b23e4b40acbf301731022a54aadad5a197ab2aa && \
 RUN pip install \
     librosa==0.8.0 \
     ffmpeg-python \
-    git+https://github.com/Hiroshiba/acoustic_feature_extractor@784801f94063ce92f6cfabc720f51cb83910b30e \
+    git+https://github.com/Hiroshiba/acoustic_feature_extractor@45f02c1631abd90508c85398d126ec194c1d90a1 \
     git+https://github.com/Hiroshiba/openjtalk-label-getter@3737eec59ca5d35a5a43f31d1f6c51c2835d9030 \
     git+https://github.com/Hiroshiba/julius4seg@8b36b61f6fcc761612be8d6c33b391b7586d95f0
 
