@@ -1,10 +1,7 @@
-FROM hiroshiba/hiho-docker-base:v7.1
+FROM hiroshiba/hiho-docker-base:v8.0
 
 # install for audio utils, librosa, segmentation-kit
 RUN apt-get update && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository -y ppa:jonathonf/ffmpeg-4 && \
-    apt-get update && \
     apt-get install -y sox ffmpeg && \
     apt-get install -y open-jtalk open-jtalk-mecab-naist-jdic hts-voice-nitech-jp-atr503-m001 && \
     apt-get install -y swig libsndfile1-dev libasound2-dev && \

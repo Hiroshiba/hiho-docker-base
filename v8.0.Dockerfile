@@ -1,4 +1,6 @@
-FROM nvidia/cuda:10.2-cudnn8-devel-ubuntu18.04
+FROM nvidia/cuda:11.0.3-cudnn8-devel-ubuntu20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update --fix-missing && \
     apt-get install -y \
@@ -43,7 +45,7 @@ RUN apt-get update && \
     apt-get install -y kubectl
 
 # miniconda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.7.12-Linux-x86_64.sh -O ~/miniconda.sh && \
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
     /opt/conda/bin/conda clean -tipsy && \
@@ -51,8 +53,8 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.7.12-Linux-x86
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-ENV PATH=/opt/conda/bin:$PATH
-RUN conda install -y python=3.7.5
+ENV PATH /opt/conda/bin:$PATH
+RUN conda install -y python=3.9.4
 
 # conda
 RUN conda install -y \
