@@ -45,6 +45,6 @@ RUN pip install \
     ffmpeg-python \
     git+https://github.com/Hiroshiba/acoustic_feature_extractor@e09cbef374526a7391048769e3a488557eefcb58 \
     git+https://github.com/Hiroshiba/openjtalk-label-getter@60519cfa75395fcf1564cc48a24956902d769c8b \
-    git+https://github.com/Hiroshiba/julius4seg@8b36b61f6fcc761612be8d6c33b391b7586d95f0
+    git+https://github.com/Hiroshiba/julius4seg@e14beae2940fd5a6ac5a9d2afc249eac6fac4a50
 
 WORKDIR /root
