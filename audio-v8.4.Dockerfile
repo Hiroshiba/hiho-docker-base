@@ -41,9 +41,9 @@ RUN id=4b23e4b40acbf301731022a54aadad5a197ab2aa && \
 
 # pypi
 RUN pip install \
-    librosa==0.8.0 \
+    librosa==0.8.1 \
     ffmpeg-python \
-    git+https://github.com/Hiroshiba/acoustic_feature_extractor@478f730c1cd5b24015c73872c2186d123be1b3bc \
+    git+https://github.com/Hiroshiba/acoustic_feature_extractor@eb56be296e83172dd54cbc2882f03c6726a8be84 \
     git+https://github.com/Hiroshiba/openjtalk-label-getter@60519cfa75395fcf1564cc48a24956902d769c8b \
     git+https://github.com/Hiroshiba/julius4seg@e14beae2940fd5a6ac5a9d2afc249eac6fac4a50
 
