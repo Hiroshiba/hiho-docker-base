@@ -1,4 +1,4 @@
-FROM hiroshiba/hiho-docker-base:v9.0
+FROM hiroshiba/hiho-docker-base:v9.1
 
 # install for audio utils, librosa, segmentation-kit
 RUN apt-get update && \

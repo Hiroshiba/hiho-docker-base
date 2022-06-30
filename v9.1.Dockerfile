@@ -26,6 +26,7 @@ RUN apt-get update --fix-missing && \
         zip \
         unzip \
         tmux \
+        p7zip-full \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -72,7 +73,8 @@ RUN pip install \
         mypy \
         pytest \
         yq \
-        gpustat
+        gpustat \
+        gdown
 
 # jupyter
 RUN python -m bash_kernel.install
