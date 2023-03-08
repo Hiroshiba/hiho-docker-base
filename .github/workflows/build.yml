@@ -24,10 +24,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Get base tag
-        run: echo "tag=$(bash get_version.bash base)" >> $GITHUB_ENV
+      - name: baseのタグを取得＆既存かを確認
+        run: |
+          tag=$(bash get_version.bash base)
+          echo "tag=$tag" >> $GITHUB_ENV
+          if docker pull hiroshiba/hiho-docker-base:$tag; then
+            echo "exist=true" >> $GITHUB_ENV
+          else
+            echo "exist=false" >> $GITHUB_ENV
+          fi
 
-      - name: Build base and push
+      - name: baseのbuild＆push
+        if: ${{ env.exist == 'false' }}
         uses: docker/build-push-action@v4
         with:
           push: true
@@ -35,10 +43,18 @@ jobs:
           tags: |
             hiroshiba/hiho-docker-base:${{ env.tag }}
 
-      - name: Get audio tag
-        run: echo "tag=$(bash get_version.bash audio)" >> $GITHUB_ENV
+      - name: audioのタグを取得＆既存かを確認
+        run: |
+          tag=$(bash get_version.bash audio)
+          echo "tag=$tag" >> $GITHUB_ENV
+          if docker pull hiroshiba/hiho-docker-base:$tag; then
+            echo "exist=true" >> $GITHUB_ENV
+          else
+            echo "exist=false" >> $GITHUB_ENV
+          fi
 
-      - name: Build audio and push
+      - name: audioのbuild＆push
+        if: ${{ env.exist == 'false' }}
         uses: docker/build-push-action@v4
         with:
           push: true
