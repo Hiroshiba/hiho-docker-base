@@ -40,7 +40,7 @@ RUN id=4b23e4b40acbf301731022a54aadad5a197ab2aa && \
     rm /tmp/github.zip
 
 # shiro
-RUN id=ec56a3e0d6136cc58cbcb4677ae4f0d86064bdf9 && \
+RUN id=67b26caf907eb9a37a593699e1e6d8c8972cea6f && \
     curl -kL https://github.com/Hiroshiba/SHIRO/archive/$id.zip >/tmp/github.zip && \
     unzip /tmp/github.zip -d /github/ && \
     mv /github/SHIRO* /github/SHIRO && \
