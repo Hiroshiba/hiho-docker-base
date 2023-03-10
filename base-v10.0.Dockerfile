@@ -47,6 +47,13 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y kubectl
 
+# other
+RUN wget https://github.com/cubicdaiya/cachectl/releases/download/v0.3.11/cachectl-linux-amd64.tar.gz && \
+    mkdir cachectl && \
+    tar -xvf cachectl-linux-amd64.tar.gz -C cachectl && \
+    mv cachectl/cachectl /usr/local/bin && \
+    rm -rf cachectl-linux-amd64.tar.gz cachectl
+
 # miniconda
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py39_4.12.0-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
