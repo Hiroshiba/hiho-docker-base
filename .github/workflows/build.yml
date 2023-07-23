@@ -32,7 +32,7 @@ jobs:
             echo "exist=true" >> $GITHUB_ENV
           else
             echo "exist=false" >> $GITHUB_ENV
-          fi
+          fi || true
 
       - name: baseのbuild＆push
         if: ${{ env.exist == 'false' }}
@@ -51,7 +51,7 @@ jobs:
             echo "exist=true" >> $GITHUB_ENV
           else
             echo "exist=false" >> $GITHUB_ENV
-          fi
+          fi || true
 
       - name: audioのbuild＆push
         if: ${{ env.exist == 'false' }}
