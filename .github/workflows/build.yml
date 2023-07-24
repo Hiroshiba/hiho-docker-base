@@ -40,6 +40,10 @@ jobs:
           tags: |
             hiroshiba/hiho-docker-base:${{ env.tag }}
 
+      - name: すべてrm
+        run: |
+          docker rmi $(docker images -a -q)
+
       - name: audioのタグを取得＆既存かを確認
         run: |
           tag=$(bash get_version.bash audio)
@@ -55,3 +59,7 @@ jobs:
           file: ./${{ env.tag }}.Dockerfile
           tags: |
             hiroshiba/hiho-docker-base:${{ env.tag }}
+
+      - name: すべてrm
+        run: |
+          docker rmi $(docker images -a -q)
