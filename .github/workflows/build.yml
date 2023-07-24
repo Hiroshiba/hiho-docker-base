@@ -26,15 +26,10 @@ jobs:
 
       - name: baseのタグを取得＆既存かを確認
         run: |
-          set +e
-
           tag=$(bash get_version.bash base)
           echo "tag=$tag" >> $GITHUB_ENV
-          if docker pull hiroshiba/hiho-docker-base:$tag; then
-            echo "exist=true" >> $GITHUB_ENV
-          else
-            echo "exist=false" >> $GITHUB_ENV
-          fi
+          IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag && echo "true" || echo "false")
+          echo "exist=$IMAGE_EXISTS" >> $GITHUB_ENV
 
       - name: baseのbuild＆push
         if: ${{ env.exist == 'false' }}
@@ -47,15 +42,10 @@ jobs:
 
       - name: audioのタグを取得＆既存かを確認
         run: |
-          set +e
-
           tag=$(bash get_version.bash audio)
           echo "tag=$tag" >> $GITHUB_ENV
-          if docker pull hiroshiba/hiho-docker-base:$tag; then
-            echo "exist=true" >> $GITHUB_ENV
-          else
-            echo "exist=false" >> $GITHUB_ENV
-          fi
+          IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag && echo "true" || echo "false")
+          echo "exist=$IMAGE_EXISTS" >> $GITHUB_ENV
 
       - name: audioのbuild＆push
         if: ${{ env.exist == 'false' }}
