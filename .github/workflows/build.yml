@@ -28,7 +28,7 @@ jobs:
         run: |
           tag=$(bash get_version.bash base)
           echo "tag=$tag" >> $GITHUB_ENV
-          IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag && echo "true" || echo "false")
+          IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag > /dev/null 2>&1 && echo "true" || echo "false")
           echo "exist=$IMAGE_EXISTS" >> $GITHUB_ENV
 
       - name: baseのbuild＆push
@@ -44,7 +44,7 @@ jobs:
         run: |
           tag=$(bash get_version.bash audio)
           echo "tag=$tag" >> $GITHUB_ENV
-          IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag && echo "true" || echo "false")
+          IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag > /dev/null 2>&1 && echo "true" || echo "false")
           echo "exist=$IMAGE_EXISTS" >> $GITHUB_ENV
 
       - name: audioのbuild＆push
