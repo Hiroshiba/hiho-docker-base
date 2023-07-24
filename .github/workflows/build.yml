@@ -41,6 +41,7 @@ jobs:
             hiroshiba/hiho-docker-base:${{ env.tag }}
 
       - name: baseのrm
+        continue-on-error: true
         run: |
           docker rmi hiroshiba/hiho-docker-base:${{ env.tag }}
 
@@ -61,5 +62,6 @@ jobs:
             hiroshiba/hiho-docker-base:${{ env.tag }}
 
       - name: audioのrm
+        continue-on-error: true
         run: |
           docker rmi hiroshiba/hiho-docker-base:${{ env.tag }}
