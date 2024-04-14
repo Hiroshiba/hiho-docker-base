@@ -1,35 +1,35 @@
-FROM nvidia/cuda:11.6.2-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update --fix-missing && \
     apt-get install -y \
-        locales \
-        wget \
-        bzip2 \
-        ca-certificates \
-        curl \
-        git \
-        gcc \
-        g++ \
-        cmake \
-        sudo \
-        htop \
-        jq \
-        vim \
-        tree \
-        dstat \
-        parallel \
-        moreutils \
-        rsync \
-        git-lfs \
-        zip \
-        unzip \
-        tmux \
-        p7zip-full \
-        bc \
-        lua5.3 \
-        luajit && \
+    locales \
+    wget \
+    bzip2 \
+    ca-certificates \
+    curl \
+    git \
+    gcc \
+    g++ \
+    cmake \
+    sudo \
+    htop \
+    jq \
+    vim \
+    tree \
+    dstat \
+    parallel \
+    moreutils \
+    rsync \
+    git-lfs \
+    zip \
+    unzip \
+    tmux \
+    p7zip-full \
+    bc \
+    lua5.3 \
+    luajit && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -41,9 +41,11 @@ ENV LANG=ja_JP.UTF-8 \
 
 # kubernetes
 RUN apt-get update && \
-    apt-get install -y apt-transport-https gnupg && \
-    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
+    apt-get install -y apt-transport-https ca-certificates curl && \
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg && \
+    chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg && \
+    echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list && \
+    chmod 644 /etc/apt/sources.list.d/kubernetes.list && \
     apt-get update && \
     apt-get install -y kubectl
 
