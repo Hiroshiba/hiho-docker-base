@@ -1,4 +1,4 @@
-FROM hiroshiba/hiho-docker-base:base-v11.0
+FROM hiroshiba/hiho-docker-base:base-v12.0
 
 # install for audio utils, librosa, segmentation-kit
 RUN apt-get update && \
@@ -49,10 +49,12 @@ RUN id=67b26caf907eb9a37a593699e1e6d8c8972cea6f && \
     rm /tmp/github.zip
 
 # pypi
-RUN pip install \
-    librosa==0.8.1 \
+RUN uv add \
+    librosa \
     ffmpeg-python \
-    git+https://github.com/Hiroshiba/acoustic_feature_extractor@f778f1b15801960df37a2c9fe3c130cf906fc92b \
+    pyopenjtalk \
+    pyworld \
+    git+https://github.com/Hiroshiba/acoustic_feature_extractor@8c6e35d9dd61cffd948aaba2922eaeca3b57fdc5 \
     git+https://github.com/Hiroshiba/openjtalk-label-getter@5e55da14bdda6386dae63ddb67853c65a550df9a \
     git+https://github.com/Hiroshiba/julius4seg@e14beae2940fd5a6ac5a9d2afc249eac6fac4a50
 
