@@ -50,16 +50,22 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y kubectl
 
-# uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin/:$PATH"
-RUN echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
-RUN uv python install 3.12 && uv init
+# miniconda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >>~/.bashrc && \
+    echo "conda activate base" >>~/.bashrc
+
+ENV PATH /opt/conda/bin:$PATH
+RUN conda init --all && conda install -y python=3.12.9
 
 # pypi
-RUN uv add \
+RUN pip install \
     numpy \
     numba \
+    cython \
     scipy \
     pandas \
     matplotlib \
@@ -73,10 +79,10 @@ RUN uv add \
     gpustat \
     gdown \
     tensorboard \
-    torch
+    uv
 
 # jupyter
-RUN uv run python -m bash_kernel.install
+RUN python -m bash_kernel.install
 
 # ssh
 RUN apt-get update && apt-get install -y openssh-server openssh-client wget && \

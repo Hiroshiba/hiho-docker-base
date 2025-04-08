@@ -49,7 +49,7 @@ RUN id=67b26caf907eb9a37a593699e1e6d8c8972cea6f && \
     rm /tmp/github.zip
 
 # pypi
-RUN uv add \
+RUN pip install \
     librosa \
     ffmpeg-python \
     pyopenjtalk \
