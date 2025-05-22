@@ -1,4 +1,6 @@
-FROM hiroshiba/hiho-docker-base:base-v12.0
+FROM hiroshiba/hiho-docker-base:base-v13.0
+
+ARG TARGETARCH
 
 # install for audio utils, librosa, segmentation-kit
 RUN apt-get update && \
@@ -18,7 +20,12 @@ RUN id=4182bf024872cf4ff4388475359d74695dd5ee16 && \
     unzip /tmp/github.zip -d /github/ && \
     mv /github/julius* /github/julius && \
     cd /github/julius && \
-    CC=nvcc CFLAGS=-O3 ./configure --enable-words-int --enable-setup=standard && \
+    case "${TARGETARCH}" in \
+    amd64) TRIPLE="x86_64-unknown-linux-gnu" ;; \
+    arm64) TRIPLE="aarch64-unknown-linux-gnu" ;; \
+    *) TRIPLE="${TARGETARCH}-unknown-linux-gnu" ;; \
+    esac && \
+    ./configure --build="${TRIPLE}" --enable-words-int --enable-setup=standard && \
     make -j && \
     make install && \
     rm -r /github/julius && \
@@ -48,13 +55,16 @@ RUN id=67b26caf907eb9a37a593699e1e6d8c8972cea6f && \
     bash build.bash && \
     rm /tmp/github.zip
 
-# pypi
-RUN pip install \
+# MFA
+RUN conda install -c conda-forge montreal-forced-aligner "joblib<1.4"
+
+# uv
+RUN cd /opt/uv && \
+    uv add \
     librosa \
     ffmpeg-python \
     pyopenjtalk \
     pyworld \
-    git+https://github.com/Hiroshiba/acoustic_feature_extractor@8c6e35d9dd61cffd948aaba2922eaeca3b57fdc5 \
     git+https://github.com/Hiroshiba/openjtalk-label-getter@5e55da14bdda6386dae63ddb67853c65a550df9a \
     git+https://github.com/Hiroshiba/julius4seg@e14beae2940fd5a6ac5a9d2afc249eac6fac4a50
 

@@ -1,4 +1,6 @@
-FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04
+FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04
+
+ARG TARGETARCH
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -51,18 +53,28 @@ RUN apt-get update && \
     apt-get install -y kubectl
 
 # miniconda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+RUN case "${TARGETARCH}" in \
+    "amd64") ARCH="x86_64" ;; \
+    "arm64") ARCH="aarch64" ;; \
+    *) echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
+    esac && \
+    wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-${ARCH}.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >>~/.bashrc && \
     echo "conda activate base" >>~/.bashrc
 
-ENV PATH /opt/conda/bin:$PATH
-RUN conda init --all && conda install -y python=3.12.9
+ENV PATH=/opt/conda/bin:$PATH
+RUN conda init --all && conda install -y python=3.11.11
 
-# pypi
-RUN pip install \
+# uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+RUN mkdir -p /opt/uv && \
+    cd /opt/uv && \
+    echo 3.11.11 >> .python-version && \
+    uv init --bare . && \
+    uv add \
     numpy \
     numba \
     cython \
@@ -78,11 +90,7 @@ RUN pip install \
     yq \
     gpustat \
     gdown \
-    tensorboard \
-    uv
-
-# jupyter
-RUN python -m bash_kernel.install
+    tensorboard
 
 # ssh
 RUN apt-get update && apt-get install -y openssh-server openssh-client wget && \

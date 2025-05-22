@@ -9,6 +9,9 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      # - name: Free Disk Space (Ubuntu)
+      #   uses: jlumbroso/free-disk-space@v1.3.1
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -36,6 +39,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          platforms: linux/amd64,linux/arm64
           file: ./${{ env.tag }}.Dockerfile
           tags: |
             hiroshiba/hiho-docker-base:${{ env.tag }}
@@ -57,6 +61,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          # platforms: linux/amd64,linux/arm64 # NOTE: linux/arm64はmontreal-forced-alignerが対応していない
+          platforms: linux/amd64
           file: ./${{ env.tag }}.Dockerfile
           tags: |
             hiroshiba/hiho-docker-base:${{ env.tag }}
