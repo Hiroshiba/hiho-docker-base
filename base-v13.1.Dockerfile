@@ -68,6 +68,20 @@ RUN case "${TARGETARCH}" in \
 ENV PATH=/opt/conda/bin:$PATH
 RUN conda init --all && conda install -y python=3.11.11
 
+# pypi
+
+RUN pip install \
+    gpustat \
+    yq \
+    tensorboard \
+    gdown \
+    ipython \
+    jupyter \
+    bash_kernel \
+    mypy \
+    ruff \
+    pytest
+
 # uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 RUN mkdir -p /opt/uv && \
@@ -81,16 +95,9 @@ RUN mkdir -p /opt/uv && \
     scipy \
     pandas \
     matplotlib \
-    ipython \
-    jupyter \
-    bash_kernel \
     mypy \
     ruff \
-    pytest \
-    yq \
-    gpustat \
-    gdown \
-    tensorboard
+    pytest
 
 # ssh
 RUN apt-get update && apt-get install -y openssh-server openssh-client wget && \

@@ -1,4 +1,4 @@
-FROM hiroshiba/hiho-docker-base:base-v13.0
+FROM hiroshiba/hiho-docker-base:base-v13.1
 
 ARG TARGETARCH
 
@@ -23,7 +23,7 @@ RUN id=4182bf024872cf4ff4388475359d74695dd5ee16 && \
     case "${TARGETARCH}" in \
     amd64) TRIPLE="x86_64-unknown-linux-gnu" ;; \
     arm64) TRIPLE="aarch64-unknown-linux-gnu" ;; \
-    *) TRIPLE="${TARGETARCH}-unknown-linux-gnu" ;; \
+    *) echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
     esac && \
     ./configure --build="${TRIPLE}" --enable-words-int --enable-setup=standard && \
     make -j && \
