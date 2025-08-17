@@ -68,7 +68,11 @@ RUN case "${TARGETARCH}" in \
     echo "conda activate base" >>~/.bashrc
 
 ENV PATH=/opt/conda/bin:$PATH
-RUN conda init --all && conda install -y python=3.11.11
+RUN conda init --all && \
+    conda config --remove-key channels || true && \
+    conda config --add channels conda-forge && \
+    conda config --set channel_priority strict && \
+    conda install -y python=3.11.11
 
 # pypi
 RUN pip install \
