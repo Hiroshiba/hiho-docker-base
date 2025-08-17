@@ -60,19 +60,15 @@ RUN case "${TARGETARCH}" in \
     "arm64") ARCH="aarch64" ;; \
     *) echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
     esac && \
-    wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-${ARCH}.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh && \
+    wget -q https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-${ARCH}.sh -O ~/miniforge.sh && \
+    /bin/bash ~/miniforge.sh -b -p /opt/conda && \
+    rm ~/miniforge.sh && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >>~/.bashrc && \
     echo "conda activate base" >>~/.bashrc
 
 ENV PATH=/opt/conda/bin:$PATH
-RUN conda init --all && \
-    conda config --remove-key channels || true && \
-    conda config --add channels conda-forge && \
-    conda config --set channel_priority strict && \
-    conda install -y python=3.11.11
+RUN conda init --all && conda install -y python=3.11.11
 
 # pypi
 RUN pip install \
@@ -108,7 +104,7 @@ RUN mkdir -p /opt/uv && \
 RUN npm install -g @anthropic-ai/claude-code @openai/codex
 
 # ssh
-RUN apt-get update && apt-get install -y openssh-server openssh-client wget && \
+RUN apt-get update && apt-get install -y openssh-server openssh-client && \
     apt-get clean && mkdir /var/run/sshd
 
 RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh && \
