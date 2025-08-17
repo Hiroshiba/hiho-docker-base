@@ -31,7 +31,9 @@ RUN apt-get update --fix-missing && \
     p7zip-full \
     bc \
     lua5.3 \
-    luajit && \
+    luajit \
+    nodejs \
+    npm && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -69,7 +71,6 @@ ENV PATH=/opt/conda/bin:$PATH
 RUN conda init --all && conda install -y python=3.11.11
 
 # pypi
-
 RUN pip install \
     gpustat \
     yq \
@@ -98,6 +99,9 @@ RUN mkdir -p /opt/uv && \
     mypy \
     ruff \
     pytest
+
+# npm
+RUN npm install -g @anthropic-ai/claude-code @openai/codex
 
 # ssh
 RUN apt-get update && apt-get install -y openssh-server openssh-client wget && \
