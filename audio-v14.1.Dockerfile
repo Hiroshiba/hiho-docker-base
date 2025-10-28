@@ -1,4 +1,4 @@
-FROM hiroshiba/hiho-docker-base:base-v14.0
+FROM hiroshiba/hiho-docker-base:base-v14.1
 
 ARG TARGETARCH
 

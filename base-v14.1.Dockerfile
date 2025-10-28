@@ -54,6 +54,17 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y kubectl
 
+# aws cli
+RUN case "${TARGETARCH}" in \
+    "amd64") AWS_ARCH="x86_64" ;; \
+    "arm64") AWS_ARCH="aarch64" ;; \
+    *) echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
+    esac && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-${AWS_ARCH}.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -rf awscliv2.zip aws
+
 # miniconda
 RUN case "${TARGETARCH}" in \
     "amd64") ARCH="x86_64" ;; \
