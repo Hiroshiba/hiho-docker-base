@@ -1,4 +1,4 @@
-FROM hiroshiba/hiho-docker-base:base-v14.2
+FROM hiroshiba/hiho-docker-base:base-v14.3
 
 ARG TARGETARCH
 
@@ -57,15 +57,5 @@ RUN id=67b26caf907eb9a37a593699e1e6d8c8972cea6f && \
 
 # MFA
 RUN conda install -c conda-forge montreal-forced-aligner "joblib<1.4"
-
-# uv
-RUN cd /opt/uv && \
-    uv add \
-    librosa \
-    ffmpeg-python \
-    pyopenjtalk \
-    pyworld \
-    git+https://github.com/Hiroshiba/openjtalk-label-getter@5e55da14bdda6386dae63ddb67853c65a550df9a \
-    git+https://github.com/Hiroshiba/julius4seg@e14beae2940fd5a6ac5a9d2afc249eac6fac4a50
 
 WORKDIR /root

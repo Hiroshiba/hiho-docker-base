@@ -96,20 +96,6 @@ RUN pip install \
 
 # uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-RUN mkdir -p /opt/uv && \
-    cd /opt/uv && \
-    echo 3.11.11 >> .python-version && \
-    uv init --bare . && \
-    uv add \
-    numpy \
-    numba \
-    cython \
-    scipy \
-    pandas \
-    matplotlib \
-    mypy \
-    ruff \
-    pytest
 
 # npm
 RUN npm install -g @anthropic-ai/claude-code @openai/codex
