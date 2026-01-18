@@ -19,22 +19,22 @@ jobs:
           dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: baseのタグを取得＆既存かを確認
+        id: base-check
         run: |
           tag=$(bash get_version.bash base)
-          echo "tag=$tag" >> $GITHUB_ENV
+          echo "tag=$tag" >> $GITHUB_OUTPUT
           IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag > /dev/null 2>&1 && echo "true" || echo "false")
-          echo "exist=$IMAGE_EXISTS" >> $GITHUB_ENV
+          echo "exist=$IMAGE_EXISTS" >> $GITHUB_OUTPUT
 
       - name: baseのbuild＆push
-        if: ${{ env.exist == 'false' }}
+        if: ${{ steps.base-check.outputs.exist == 'false' }}
         uses: docker/build-push-action@v4
         with:
           push: true
-          # platforms: linux/amd64,linux/arm64 # NOTE: audioが対応していないので速度重視のためamd64のみビルド
-          platforms: linux/amd64
-          file: ./${{ env.tag }}.Dockerfile
+          platforms: linux/amd64,linux/arm64
+          file: ./${{ steps.base-check.outputs.tag }}.Dockerfile
           tags: |
-            hiroshiba/hiho-docker-base:${{ env.tag }}
+            hiroshiba/hiho-docker-base:${{ steps.base-check.outputs.tag }}
 
   docker-audio:
     runs-on: ubuntu-latest
@@ -50,19 +50,20 @@ jobs:
           dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: audioのタグを取得＆既存かを確認
+        id: audio-check
         run: |
           tag=$(bash get_version.bash audio)
-          echo "tag=$tag" >> $GITHUB_ENV
+          echo "tag=$tag" >> $GITHUB_OUTPUT
           IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag > /dev/null 2>&1 && echo "true" || echo "false")
-          echo "exist=$IMAGE_EXISTS" >> $GITHUB_ENV
+          echo "exist=$IMAGE_EXISTS" >> $GITHUB_OUTPUT
 
       - name: audioのbuild＆push
-        if: ${{ env.exist == 'false' }}
+        if: ${{ steps.audio-check.outputs.exist == 'false' }}
         uses: docker/build-push-action@v4
         with:
           push: true
           # platforms: linux/amd64,linux/arm64 # NOTE: linux/arm64はmontreal-forced-alignerが対応していない
           platforms: linux/amd64
-          file: ./${{ env.tag }}.Dockerfile
+          file: ./${{ steps.audio-check.outputs.tag }}.Dockerfile
           tags: |
-            hiroshiba/hiho-docker-base:${{ env.tag }}
+            hiroshiba/hiho-docker-base:${{ steps.audio-check.outputs.tag }}
