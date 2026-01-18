@@ -30,6 +30,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          # platforms: linux/amd64,linux/arm64 # NOTE: audioが対応していないので速度重視のためamd64のみビルド
           platforms: linux/amd64
           file: ./${{ env.tag }}.Dockerfile
           tags: |
@@ -60,6 +61,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          # platforms: linux/amd64,linux/arm64 # NOTE: linux/arm64はmontreal-forced-alignerが対応していない
           platforms: linux/amd64
           file: ./${{ env.tag }}.Dockerfile
           tags: |
