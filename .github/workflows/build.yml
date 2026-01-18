@@ -60,6 +60,8 @@ jobs:
     needs: [config, docker-base-build]
     if: ${{ needs.config.outputs.base_exist == 'false' }}
     steps:
+      - uses: actions/checkout@v3
+
       - uses: ./.github/actions/setup-docker
         with:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -110,6 +112,8 @@ jobs:
     needs: [config, docker-audio-build]
     if: ${{ needs.config.outputs.audio_exist == 'false' }}
     steps:
+      - uses: actions/checkout@v3
+
       - uses: ./.github/actions/setup-docker
         with:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
