@@ -6,64 +6,123 @@ on:
       - "master"
 
 jobs:
-  docker-base:
+  config:
     runs-on: ubuntu-latest
+    outputs:
+      base_tag: ${{ steps.base.outputs.tag }}
+      base_exist: ${{ steps.base.outputs.exist }}
+      audio_tag: ${{ steps.audio.outputs.tag }}
+      audio_exist: ${{ steps.audio.outputs.exist }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Docker
-        uses: ./.github/actions/setup-docker
-        with:
-          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: actions/checkout@v3
 
       - name: baseのタグを取得＆既存かを確認
-        id: base-check
+        id: base
         run: |
           tag=$(bash get_version.bash base)
           echo "tag=$tag" >> $GITHUB_OUTPUT
-          IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag > /dev/null 2>&1 && echo "true" || echo "false")
+          IMAGE_EXISTS=$(docker manifest inspect hiroshiba/hiho-docker-base:$tag > /dev/null 2>&1 && echo "true" || echo "false")
           echo "exist=$IMAGE_EXISTS" >> $GITHUB_OUTPUT
 
-      - name: baseのbuild＆push
-        if: ${{ steps.base-check.outputs.exist == 'false' }}
-        uses: docker/build-push-action@v4
-        with:
-          push: true
-          platforms: linux/amd64,linux/arm64
-          file: ./${{ steps.base-check.outputs.tag }}.Dockerfile
-          tags: |
-            hiroshiba/hiho-docker-base:${{ steps.base-check.outputs.tag }}
+      - name: audioのタグを取得＆既存かを確認
+        id: audio
+        run: |
+          tag=$(bash get_version.bash audio)
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          IMAGE_EXISTS=$(docker manifest inspect hiroshiba/hiho-docker-base:$tag > /dev/null 2>&1 && echo "true" || echo "false")
+          echo "exist=$IMAGE_EXISTS" >> $GITHUB_OUTPUT
 
-  docker-audio:
-    runs-on: ubuntu-latest
-    needs: docker-base
+  docker-base-build:
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    needs: config
+    if: ${{ needs.config.outputs.base_exist == 'false' }}
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup Docker
-        uses: ./.github/actions/setup-docker
+      - uses: ./.github/actions/setup-docker
         with:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: audioのタグを取得＆既存かを確認
-        id: audio-check
-        run: |
-          tag=$(bash get_version.bash audio)
-          echo "tag=$tag" >> $GITHUB_OUTPUT
-          IMAGE_EXISTS=$(docker pull hiroshiba/hiho-docker-base:$tag > /dev/null 2>&1 && echo "true" || echo "false")
-          echo "exist=$IMAGE_EXISTS" >> $GITHUB_OUTPUT
-
-      - name: audioのbuild＆push
-        if: ${{ steps.audio-check.outputs.exist == 'false' }}
+      - name: baseのbuild＆push (${{ matrix.arch }})
         uses: docker/build-push-action@v4
         with:
           push: true
-          # platforms: linux/amd64,linux/arm64 # NOTE: linux/arm64はmontreal-forced-alignerが対応していない
-          platforms: linux/amd64
-          file: ./${{ steps.audio-check.outputs.tag }}.Dockerfile
-          tags: |
-            hiroshiba/hiho-docker-base:${{ steps.audio-check.outputs.tag }}
+          platforms: linux/${{ matrix.arch }}
+          file: ./${{ needs.config.outputs.base_tag }}.Dockerfile
+          tags: hiroshiba/hiho-docker-base:${{ needs.config.outputs.base_tag }}-${{ matrix.arch }}
+
+  docker-base-manifest:
+    runs-on: ubuntu-latest
+    needs: [config, docker-base-build]
+    if: ${{ needs.config.outputs.base_exist == 'false' }}
+    steps:
+      - uses: ./.github/actions/setup-docker
+        with:
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: マニフェストリストの作成
+        run: |
+          docker buildx imagetools create -t hiroshiba/hiho-docker-base:${{ needs.config.outputs.base_tag }} \
+            hiroshiba/hiho-docker-base:${{ needs.config.outputs.base_tag }}-amd64 \
+            hiroshiba/hiho-docker-base:${{ needs.config.outputs.base_tag }}-arm64
+
+      - name: 一時イメージの削除
+        run: |
+          docker run --rm lumir/remove-dockerhub-tag \
+            --user "${{ secrets.DOCKERHUB_USERNAME }}" \
+            --password "${{ secrets.DOCKERHUB_TOKEN }}" \
+            hiroshiba/hiho-docker-base:${{ needs.config.outputs.base_tag }}-amd64
+          docker run --rm lumir/remove-dockerhub-tag \
+            --user "${{ secrets.DOCKERHUB_USERNAME }}" \
+            --password "${{ secrets.DOCKERHUB_TOKEN }}" \
+            hiroshiba/hiho-docker-base:${{ needs.config.outputs.base_tag }}-arm64
+
+  docker-audio-build:
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    needs: [config, docker-base-manifest]
+    if: ${{ !cancelled() && needs.config.outputs.audio_exist == 'false' }}
+    strategy:
+      matrix:
+        arch: [amd64]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ./.github/actions/setup-docker
+        with:
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: audioのbuild＆push (${{ matrix.arch }})
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          platforms: linux/${{ matrix.arch }}
+          file: ./${{ needs.config.outputs.audio_tag }}.Dockerfile
+          tags: hiroshiba/hiho-docker-base:${{ needs.config.outputs.audio_tag }}-${{ matrix.arch }}
+
+  docker-audio-manifest:
+    runs-on: ubuntu-latest
+    needs: [config, docker-audio-build]
+    if: ${{ needs.config.outputs.audio_exist == 'false' }}
+    steps:
+      - uses: ./.github/actions/setup-docker
+        with:
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: マニフェストリストの作成
+        run: |
+          docker buildx imagetools create -t hiroshiba/hiho-docker-base:${{ needs.config.outputs.audio_tag }} \
+            hiroshiba/hiho-docker-base:${{ needs.config.outputs.audio_tag }}-amd64
+
+      - name: 一時イメージの削除
+        run: |
+          docker run --rm lumir/remove-dockerhub-tag \
+            --user "${{ secrets.DOCKERHUB_USERNAME }}" \
+            --password "${{ secrets.DOCKERHUB_TOKEN }}" \
+            hiroshiba/hiho-docker-base:${{ needs.config.outputs.audio_tag }}-amd64
