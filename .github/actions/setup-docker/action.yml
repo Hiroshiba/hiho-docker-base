@@ -12,6 +12,27 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Clean Disk Space
+      shell: bash
+      run: |
+        echo "Removing large pre-installed tools..."
+        # .NET SDKs
+        sudo rm -rf /usr/share/dotnet
+        # Haskell (ghc)
+        sudo rm -rf /opt/ghc /usr/local/.ghcup
+        # Android SDK/NDK
+        sudo rm -rf /usr/local/lib/android
+        # CodeQL
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        # Swift
+        sudo rm -rf /usr/share/swift
+        # Go
+        sudo rm -rf /usr/local/go /opt/hostedtoolcache/go
+        # Java (OpenJDK)
+        sudo rm -rf /usr/lib/jvm/*
+        # Ruby tool cache and rvm
+        sudo rm -rf /opt/hostedtoolcache/Ruby /home/runner/.rvm
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
