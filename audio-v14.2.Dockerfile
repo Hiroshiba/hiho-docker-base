@@ -1,4 +1,4 @@
-FROM hiroshiba/hiho-docker-base:base-v14.1
+FROM hiroshiba/hiho-docker-base:base-v14.2
 
 ARG TARGETARCH
 
@@ -31,13 +31,13 @@ RUN id=4182bf024872cf4ff4388475359d74695dd5ee16 && \
     rm -r /github/julius && \
     rm /tmp/github.zip
 
-# # dictation-kit
-# RUN id=1ceb4dec245ef482918ca33c55c71d383dce145e && \
-#     git clone https://github.com/julius-speech/dictation-kit.git && \
-#     cd dictation-kit && \
-#     git reset --hard $id && \
-#     git lfs pull && \
-#     rm -rf .git
+# dictation-kit
+RUN curl -kL https://github.com/Hiroshiba/dictation-kit-nolfs/archive/refs/heads/master.zip >/tmp/github.zip && \
+    unzip /tmp/github.zip -d /github/ && \
+    mv /github/dictation-kit-nolfs* /github/dictation-kit && \
+    cd /github/dictation-kit && \
+    bash merge-large-files.sh && \
+    rm /tmp/github.zip
 
 # segmentation-kit
 RUN id=4b23e4b40acbf301731022a54aadad5a197ab2aa && \
