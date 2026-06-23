@@ -107,7 +107,7 @@ RUN apt-get update && apt-get install -y openssh-server openssh-client && \
 RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh && \
     echo "wget --quiet \$GITHUB_KEYS -O /root/.ssh/authorized_keys" >/run.sh && \
     echo "chmod 600 /root/.ssh/authorized_keys" >>/run.sh && \
-    echo "/usr/sbin/sshd -D" >>/run.sh
+    echo "/usr/sbin/sshd -D -o PermitUserEnvironment=yes" >>/run.sh
 
 EXPOSE 22
 CMD ["/bin/bash", "/run.sh"]
